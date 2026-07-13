@@ -1,0 +1,16 @@
+server:
+  port: 8070
+
+spring:
+  application:
+    name: backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/couple_ordering?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai}
+    username: ${DB_USERNAME:couple_ordering_app}
+    password: ${DB_PASSWORD}
+  mybatis:
+    mapper-locations: classpath:mapper/**/*.xml
+    type-aliases-package: com.couple.ordering.entity
+    configuration:
+      map-underscore-to-camel-case: true

@@ -1,0 +1,713 @@
+openapi: 3.0.3
+info:
+  title: 小程序点单系统 API（第一阶段）
+  description: 第一阶段只包含健康检查、分类查询、菜品列表和菜品详情接口。
+  version: 1.0.0
+servers:
+- url: http://localhost:8080/api/v1
+  description: 本地开发环境
+tags:
+- name: 基础接口
+  description: 服务健康检查
+- name: 分类接口
+  description: 小程序用户侧分类查询
+- name: 菜品接口
+  description: 小程序用户侧菜品查询
+paths:
+  /health:
+    get:
+      tags:
+      - 基础接口
+      summary: 健康检查
+      operationId: health
+      responses:
+        '200':
+          description: 服务正常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /categories:
+    get:
+      tags:
+      - 分类接口
+      summary: 查询已启用分类
+      operationId: listEnabledCategories
+      description: 只返回 status=1 的分类，按 sort ASC、id ASC 排序。
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryListResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /dishes:
+    get:
+      tags:
+      - 菜品接口
+      summary: 查询已上架菜品列表
+      operationId: listEnabledDishes
+      description: 普通用户只返回 status=1 且所属分类已启用的菜品。
+      parameters:
+      - name: categoryId
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+        example: 1
+        description: 分类 ID
+      - name: keyword
+        in: query
+        required: false
+        schema:
+          type: string
+        example: 番茄
+        description: 菜品名称关键字
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DishListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /dishes/{id}:
+    get:
+      tags:
+      - 菜品接口
+      summary: 查询菜品详情
+      operationId: getEnabledDish
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1
+        description: 菜品 ID
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DishResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 登录成功后返回的 JWT，填写时不需要重复输入 Bearer
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          example: 40001
+        message:
+          type: string
+          example: 请求参数不正确
+        data:
+          nullable: true
+          example: null
+    HealthData:
+      type: object
+      properties:
+        status:
+          type: string
+          example: UP
+    HealthResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/HealthData'
+    Category:
+      type: object
+      required:
+      - id
+      - name
+      - sort
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: 家常菜
+        sort:
+          type: integer
+          example: 1
+        status:
+          type: integer
+          enum:
+          - 0
+          - 1
+          example: 1
+    CategoryListResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    Dish:
+      type: object
+      required:
+      - id
+      - categoryId
+      - name
+      - price
+      - status
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        categoryId:
+          type: integer
+          format: int64
+          example: 1
+        categoryName:
+          type: string
+          example: 家常菜
+        name:
+          type: string
+          example: 番茄炒蛋
+        price:
+          type: number
+          format: double
+          example: 12.0
+        imageUrl:
+          type: string
+          nullable: true
+          example: ''
+        description:
+          type: string
+          nullable: true
+          example: 酸甜家常口味
+        status:
+          type: integer
+          enum:
+          - 0
+          - 1
+          example: 1
+    DishListResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dish'
+    DishResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/Dish'
+    WechatLoginRequest:
+      type: object
+      required:
+      - code
+      properties:
+        code:
+          type: string
+          description: wx.login 返回的临时登录凭证
+          example: 081abcDEF...
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nickname:
+          type: string
+          example: 小郭
+        avatarUrl:
+          type: string
+          nullable: true
+          example: https://example.com/avatar.jpg
+        role:
+          type: integer
+          enum:
+          - 0
+          - 1
+          description: 0普通用户，1管理员
+          example: 1
+        status:
+          type: integer
+          enum:
+          - 0
+          - 1
+          example: 1
+    LoginData:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiJ9...
+        user:
+          $ref: '#/components/schemas/User'
+    LoginResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/LoginData'
+    UserResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/User'
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        dishId:
+          type: integer
+          format: int64
+          example: 1
+        dishName:
+          type: string
+          example: 番茄炒蛋
+        dishImageUrl:
+          type: string
+          nullable: true
+          example: ''
+        dishPrice:
+          type: number
+          format: double
+          example: 12.0
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+        amount:
+          type: number
+          format: double
+          example: 24.0
+    CartData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        totalQuantity:
+          type: integer
+          example: 2
+        totalAmount:
+          type: number
+          format: double
+          example: 24.0
+    CartResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/CartData'
+    AddCartItemRequest:
+      type: object
+      required:
+      - dishId
+      - quantity
+      properties:
+        dishId:
+          type: integer
+          format: int64
+          example: 1
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+    UpdateCartItemRequest:
+      type: object
+      required:
+      - quantity
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+          example: 3
+    SimpleSuccessResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          nullable: true
+          example: null
+    CreateOrderRequest:
+      type: object
+      properties:
+        remark:
+          type: string
+          maxLength: 255
+          example: 少盐，不要葱
+        expectedTime:
+          type: string
+          description: 格式：yyyy-MM-dd HH:mm:ss
+          example: '2026-07-13 18:30:00'
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        dishId:
+          type: integer
+          format: int64
+          nullable: true
+          example: 1
+        dishName:
+          type: string
+          example: 番茄炒蛋
+        dishImageUrl:
+          type: string
+          nullable: true
+          example: ''
+        dishPrice:
+          type: number
+          format: double
+          example: 12.0
+        quantity:
+          type: integer
+          example: 2
+        amount:
+          type: number
+          format: double
+          example: 24.0
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        orderNumber:
+          type: string
+          example: '202607131830001001'
+        userId:
+          type: integer
+          format: int64
+          example: 1
+        status:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          description: 1待接单，2已接单，3制作中，4已完成，5已取消
+          example: 1
+        amount:
+          type: number
+          format: double
+          example: 24.0
+        remark:
+          type: string
+          nullable: true
+          example: 少盐，不要葱
+        expectedTime:
+          type: string
+          nullable: true
+          example: '2026-07-13 18:30:00'
+        cancelReason:
+          type: string
+          nullable: true
+        createTime:
+          type: string
+          example: '2026-07-13 17:55:00'
+        updateTime:
+          type: string
+          example: '2026-07-13 17:55:00'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+    OrderResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/Order'
+    PageOrderData:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          format: int64
+          example: 2
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+    PageOrderResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/PageOrderData'
+    CancelOrderRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 255
+          example: 临时不吃了
+    CreateCategoryRequest:
+      type: object
+      required:
+      - name
+      - sort
+      - status
+      properties:
+        name:
+          type: string
+          maxLength: 32
+          example: 饮品
+        sort:
+          type: integer
+          minimum: 0
+          example: 4
+        status:
+          type: integer
+          enum:
+          - 0
+          - 1
+          example: 1
+    UpdateCategoryRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateCategoryRequest'
+    UpdateStatusRequest:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          type: integer
+          enum:
+          - 0
+          - 1
+          example: 0
+    CreateDishRequest:
+      type: object
+      required:
+      - categoryId
+      - name
+      - price
+      - status
+      properties:
+        categoryId:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          maxLength: 64
+          example: 可乐鸡翅
+        price:
+          type: number
+          format: double
+          minimum: 0
+          example: 28.0
+        imageUrl:
+          type: string
+          nullable: true
+          example: https://example.com/dish.jpg
+        description:
+          type: string
+          maxLength: 255
+          nullable: true
+          example: 甜咸口味
+        status:
+          type: integer
+          enum:
+          - 0
+          - 1
+          example: 1
+    UpdateDishRequest:
+      allOf:
+      - $ref: '#/components/schemas/CreateDishRequest'
+    UpdateOrderStatusRequest:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          example: 2
+    PageDishData:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          format: int64
+          example: 2
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dish'
+    PageDishResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/PageDishData'
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: 未登录或 Token 无效
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: 无操作权限
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: 数据状态冲突
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: 系统内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: 页码，从 1 开始
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      description: 每页条数，最大 100

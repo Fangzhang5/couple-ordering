@@ -1,0 +1,42 @@
+# IntelliJ IDEA
+**/.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Maven 构建产物
+**/target/
+
+# 日志
+*.log
+logs/
+
+# 环境变量和敏感信息
+.env
+.env.*
+!.env.example
+
+# 本地临时配置
+**/application-local.yml
+**/application-local.yaml
+**/application-local.properties
+
+# 微信开发者工具本地私有配置
+**/project.private.config.json
+
+# Node.js，后续小程序需要 npm 时使用
+**/node_modules/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 数据库备份，不忽略正式初始化脚本
+backups/
+*_backup.sql
+*.dump
+
+# 本地上传文件
+uploads/
