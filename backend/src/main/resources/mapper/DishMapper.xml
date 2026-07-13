@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guowei.ordering.mapper.DishMapper">
+    <select id="selectEnabledList" resultType="com.guowei.ordering.vo.DishVO">
+        SELECT
+            d.id,
+            d.category_id,
+            c.name AS category_name,
+            d.name,
+            d.price,
+            d.image_url,
+            d.description,
+            d.status
+        FROM dish d
+        INNER JOIN category c ON c.id = d.category_id
+        WHERE d.status = 1
+            AND c.status = 1
+        <if test="categoryId != null">
+            AND d.category_id = #{categoryId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND d.name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY d.id ASC
+    </select>
+
+    <select id="selectEnabledById" resultType="com.guowei.ordering.vo.DishVO">
+        SELECT
+            d.id,
+            d.category_id,
+            c.name AS category_name,
+            d.name,
+            d.price,
+            d.image_url,
+            d.description,
+            d.status
+        FROM dish d
+        INNER JOIN category c ON c.id = d.category_id
+        WHERE d.id = #{id}
+            AND d.status = 1
+            AND c.status = 1
+        LIMIT 1
+    </select>
+</mapper>
