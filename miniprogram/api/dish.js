@@ -9,6 +9,13 @@ function getDishes(categoryId) {
   })
 }
 
+function getDishDetail(id) {
+  return request({
+    url: `/dishes/${id}`
+  })
+}
+
 module.exports = {
-  getDishes
+  getDishes,
+  getDishDetail
 }

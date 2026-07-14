@@ -30,6 +30,14 @@ Page({
     this.loadDishes(categoryId)
   },
 
+  onDishTap(event) {
+    const dishId = Number(event.currentTarget.dataset.id)
+
+    wx.navigateTo({
+      url: `/pages/dish-detail/dish-detail?id=${dishId}`
+    })
+  },
+
   loadCategories() {
     this.setData({
       categoryLoading: true

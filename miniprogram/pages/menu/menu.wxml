@@ -40,17 +40,34 @@
 
     <!-- 3. 有菜品，正常展示 -->
     <block wx:else>
-      <view wx:for="{{currentDishes}}" wx:key="id" class="dish-item">
-        <view class="dish-name">
-          {{item.name}}
+      <view wx:for="{{currentDishes}}" wx:key="id" class="dish-item" data-id="{{item.id}}" bindtap="onDishTap">
+        <!-- 有图片地址时显示真实图片 -->
+        <image wx:if="{{item.imageUrl}}" class="dish-image" src="{{item.imageUrl}}" mode="aspectFill"></image>
+
+        <!-- 没有图片时显示占位区域 -->
+        <view wx:else class="dish-image dish-placeholder">
+          <text>🍳</text>
         </view>
 
-        <view class="dish-description">
-          {{item.description}}
-        </view>
+        <view class="dish-content">
+          <view class="dish-name">
+            {{item.name}}
+          </view>
 
-        <view class="dish-price">
-          ¥{{item.price}}
+          <view class="dish-description">
+            {{item.description || '暂无菜品描述'}}
+          </view>
+
+          <view class="dish-bottom">
+            <view class="dish-price">
+              <text class="currency">¥</text>
+              {{item.price}}
+            </view>
+
+            <view class="detail-button">
+              查看
+            </view>
+          </view>
         </view>
       </view>
     </block>
