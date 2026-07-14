@@ -1,0 +1,64 @@
+/* pages/menu.wxss */
+.menu-page {
+  display: flex;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.category-list {
+  width: 180rpx;
+  height: 100%;
+  background-color: #f5f5f5;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 100rpx;
+
+  color: #666666;
+  font-size: 28rpx;
+}
+
+.category-item.active {
+  color: #222222;
+  font-weight: bold;
+  background-color: #ffffff;
+  border-left: 8rpx solid #ff7a45;
+}
+
+.dish-list {
+  flex: 1;
+  padding: 30rpx;
+
+  color: #999999;
+  font-size: 28rpx;
+}
+
+.dish-item {
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #eeeeee;
+}
+
+.dish-name {
+  color: #222222;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.dish-description {
+  margin-top: 12rpx;
+
+  color: #999999;
+  font-size: 24rpx;
+}
+
+.dish-price {
+  margin-top: 16rpx;
+
+  color: #ff5a36;
+  font-size: 30rpx;
+  font-weight: bold;
+}
