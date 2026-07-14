@@ -5,6 +5,9 @@ const {
 const {
   getDishes
 } = require("../../api/dish")
+const {
+  formatPrice
+} = require("../../utils/format")
 
 Page({
 
@@ -76,8 +79,15 @@ Page({
 
     getDishes(categoryId)
       .then((dishes) => {
+        const formattedDishes = dishes.map((dish) => {
+          return {
+            ...dish,
+            priceText: formatPrice(dish.price)
+          }
+        })
+
         this.setData({
-          currentDishes: dishes,
+          currentDishes: formattedDishes,
           dishLoading: false
         })
       })

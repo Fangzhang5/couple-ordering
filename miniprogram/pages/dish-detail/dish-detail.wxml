@@ -32,7 +32,7 @@
 
       <text class="dish-price">
         <text class="currency">¥</text>
-        <text class="price-number">{{dish.price}}</text>
+        <text class="price-number">{{dish.priceText}}</text>
       </text>
     </view>
 

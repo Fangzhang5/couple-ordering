@@ -61,7 +61,7 @@
           <view class="dish-bottom">
             <view class="dish-price">
               <text class="currency">¥</text>
-              {{item.price}}
+              {{item.priceText}}
             </view>
 
             <view class="detail-button">
