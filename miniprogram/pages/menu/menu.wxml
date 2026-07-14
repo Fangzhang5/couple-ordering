@@ -1,5 +1,20 @@
 <!--pages/menu.wxml-->
-<view class="menu-page">
+<!-- 1. 分类正在加载 -->
+<view wx:if="{{categoryLoading}}" class="page-state">
+  <text>菜单加载中...</text>
+</view>
+
+<!-- 2. 分类加载完成，但没有任何分类 -->
+<view wx:elif="{{categories.length === 0}}" class="page-state">
+  <text class="empty-icon">🍽️</text>
+  <text class="empty-title">还没有菜单</text>
+  <text class="empty-description">
+    请先在数据库中添加并启用菜品分类
+  </text>
+</view>
+
+<!-- 3. 有分类，正常显示菜单 -->
+<view wx:else class="menu-page">
 
   <!-- 左侧分类区域 -->
   <view class="category-list">
@@ -12,19 +27,34 @@
 
   <!-- 右侧菜品区域 -->
   <view class="dish-list">
-    <view wx:for="{{currentDishes}}" wx:key="id" class="dish-item">
-      <view class="dish-name">
-        {{item.name}}
-      </view>
-
-      <view class="dish-description">
-        {{item.description}}
-      </view>
-
-      <view class="dish-price">
-        ¥{{item.price}}
-      </view>
+    <!-- 1. 菜品正在加载 -->
+    <view wx:if="{{dishLoading}}" class="dish-state">
+      <text>菜品加载中...</text>
     </view>
+
+    <!-- 2. 加载完成，但当前分类没有菜品 -->
+    <view wx:elif="{{currentDishes.length === 0}}" class="dish-state">
+      <text class="empty-icon">🥣</text>
+      <text class="empty-title">这个分类还没有菜品</text>
+    </view>
+
+    <!-- 3. 有菜品，正常展示 -->
+    <block wx:else>
+      <view wx:for="{{currentDishes}}" wx:key="id" class="dish-item">
+        <view class="dish-name">
+          {{item.name}}
+        </view>
+
+        <view class="dish-description">
+          {{item.description}}
+        </view>
+
+        <view class="dish-price">
+          ¥{{item.price}}
+        </view>
+      </view>
+    </block>
+
   </view>
 
 </view>

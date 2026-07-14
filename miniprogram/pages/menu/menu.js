@@ -1,6 +1,10 @@
 // pages/menu.js
-const { getCategories } = require("../../api/category")
-const { getDishes } = require("../../api/dish")
+const {
+  getCategories
+} = require("../../api/category")
+const {
+  getDishes
+} = require("../../api/dish")
 
 Page({
 
@@ -10,52 +14,71 @@ Page({
   data: {
     categories: [],
     activeCategoryId: null,
-    currentDishes: []
+    currentDishes: [],
+
+    categoryLoading: true,
+    dishLoading: false
   },
 
   onCategoryTap(event) {
     const categoryId = Number(event.currentTarget.dataset.id)
-  
+
     this.setData({
-      activeCategoryId: categoryId,
-      currentDishes: []
+      activeCategoryId: categoryId
     })
-  
+
     this.loadDishes(categoryId)
   },
 
   loadCategories() {
+    this.setData({
+      categoryLoading: true
+    })
+
     getCategories()
       .then((categories) => {
         const activeCategoryId =
           categories.length > 0 ? categories[0].id : null
-  
+
         this.setData({
           categories,
-          activeCategoryId
+          activeCategoryId,
+          categoryLoading: false,
+          currentDishes: []
         })
-  
+
         if (activeCategoryId !== null) {
           this.loadDishes(activeCategoryId)
         }
       })
       .catch((err) => {
         console.error("分类加载失败：", err)
+
+        this.setData({
+          categoryLoading: false
+        })
       })
   },
 
   loadDishes(categoryId) {
+    this.setData({
+      dishLoading: true,
+      currentDishes: []
+    })
+
     getDishes(categoryId)
       .then((dishes) => {
         this.setData({
-          currentDishes: dishes
+          currentDishes: dishes,
+          dishLoading: false
         })
       })
       .catch((err) => {
         console.error("菜品加载失败：", err)
-  
+
         this.setData({
-          currentDishes: []
+          currentDishes: [],
+          dishLoading: false
         })
       })
   },
