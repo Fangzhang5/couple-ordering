@@ -1,0 +1,53 @@
+<!--pages/menu/dish-detail.wxml-->
+<!-- 加载状态 -->
+<view wx:if="{{loading}}" class="page-state">
+  <text>菜品加载中...</text>
+</view>
+
+<!-- 加载失败 -->
+<view wx:elif="{{errorMessage}}" class="page-state">
+  <text class="state-icon">😵</text>
+  <text class="state-title">菜品加载失败</text>
+  <text class="state-description">{{errorMessage}}</text>
+</view>
+
+<!-- 正常详情 -->
+<view wx:elif="{{dish}}" class="detail-page">
+
+  <image
+    wx:if="{{dish.imageUrl}}"
+    class="dish-image"
+    src="{{dish.imageUrl}}"
+    mode="aspectFill"
+  ></image>
+
+  <view wx:else class="dish-image dish-placeholder">
+    <text>🍳</text>
+  </view>
+
+  <view class="detail-card">
+
+    <view class="title-row">
+      <text class="dish-name">{{dish.name}}</text>
+
+      <text class="dish-price">
+        <text class="currency">¥</text>
+        <text class="price-number">{{dish.priceText}}</text>
+      </text>
+    </view>
+
+    <view class="category-tag">
+      {{dish.categoryName}}
+    </view>
+
+    <view class="description-section">
+      <text class="section-title">菜品介绍</text>
+
+      <text class="dish-description">
+        {{dish.description || '暂无菜品介绍'}}
+      </text>
+    </view>
+
+  </view>
+
+</view>

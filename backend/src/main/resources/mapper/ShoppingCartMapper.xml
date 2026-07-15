@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.guowei.ordering.mapper.ShoppingCartMapper">
+
+    <!-- 查询当前用户购物车 -->
+    <select id="selectCartItemsByUserId"
+            resultType="com.guowei.ordering.vo.CartItemVO">
+        SELECT
+            sc.id,
+            sc.dish_id,
+            d.name AS dish_name,
+            d.image_url AS dish_image_url,
+            d.price AS dish_price,
+            sc.quantity,
+            d.price * sc.quantity AS amount
+        FROM shopping_cart sc
+        INNER JOIN dish d
+            ON d.id = sc.dish_id
+        WHERE sc.user_id = #{userId}
+        ORDER BY sc.update_time DESC, sc.id DESC
+    </select>
+
+
+    <!-- 查询用户购物车中是否已经存在该菜品 -->
+    <select id="selectByUserIdAndDishId"
+            resultType="com.guowei.ordering.entity.ShoppingCart">
+        SELECT
+            id,
+            user_id,
+            dish_id,
+            quantity,
+            create_time,
+            update_time
+        FROM shopping_cart
+        WHERE user_id = #{userId}
+            AND dish_id = #{dishId}
+        LIMIT 1
+    </select>
+
+
+    <!-- 新增购物车项 -->
+    <insert id="insert"
+            parameterType="com.guowei.ordering.entity.ShoppingCart"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO shopping_cart (
+            user_id,
+            dish_id,
+            quantity
+        )
+        VALUES (
+            #{userId},
+            #{dishId},
+            #{quantity}
+        )
+    </insert>
+
+
+    <!-- 修改购物车项数量 -->
+    <update id="updateQuantityByIdAndUserId">
+        UPDATE shopping_cart
+        SET quantity = #{quantity},
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+            AND user_id = #{userId}
+    </update>
+
+
+    <!-- 删除一个购物车项 -->
+    <delete id="deleteByIdAndUserId">
+        DELETE FROM shopping_cart
+        WHERE id = #{id}
+            AND user_id = #{userId}
+    </delete>
+
+
+    <!-- 清空当前用户购物车 -->
+    <delete id="deleteByUserId">
+        DELETE FROM shopping_cart
+        WHERE user_id = #{userId}
+    </delete>
+
+</mapper>

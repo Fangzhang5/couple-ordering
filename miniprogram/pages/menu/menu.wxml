@@ -1,0 +1,77 @@
+<!--pages/menu.wxml-->
+<!-- 1. 分类正在加载 -->
+<view wx:if="{{categoryLoading}}" class="page-state">
+  <text>菜单加载中...</text>
+</view>
+
+<!-- 2. 分类加载完成，但没有任何分类 -->
+<view wx:elif="{{categories.length === 0}}" class="page-state">
+  <text class="empty-icon">🍽️</text>
+  <text class="empty-title">还没有菜单</text>
+  <text class="empty-description">
+    请先在数据库中添加并启用菜品分类
+  </text>
+</view>
+
+<!-- 3. 有分类，正常显示菜单 -->
+<view wx:else class="menu-page">
+
+  <!-- 左侧分类区域 -->
+  <view class="category-list">
+
+    <view wx:for="{{categories}}" wx:key="id" class="category-item {{activeCategoryId === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="onCategoryTap">
+      {{item.name}}
+    </view>
+
+  </view>
+
+  <!-- 右侧菜品区域 -->
+  <view class="dish-list">
+    <!-- 1. 菜品正在加载 -->
+    <view wx:if="{{dishLoading}}" class="dish-state">
+      <text>菜品加载中...</text>
+    </view>
+
+    <!-- 2. 加载完成，但当前分类没有菜品 -->
+    <view wx:elif="{{currentDishes.length === 0}}" class="dish-state">
+      <text class="empty-icon">🥣</text>
+      <text class="empty-title">这个分类还没有菜品</text>
+    </view>
+
+    <!-- 3. 有菜品，正常展示 -->
+    <block wx:else>
+      <view wx:for="{{currentDishes}}" wx:key="id" class="dish-item" data-id="{{item.id}}" bindtap="onDishTap">
+        <!-- 有图片地址时显示真实图片 -->
+        <image wx:if="{{item.imageUrl}}" class="dish-image" src="{{item.imageUrl}}" mode="aspectFill"></image>
+
+        <!-- 没有图片时显示占位区域 -->
+        <view wx:else class="dish-image dish-placeholder">
+          <text>🍳</text>
+        </view>
+
+        <view class="dish-content">
+          <view class="dish-name">
+            {{item.name}}
+          </view>
+
+          <view class="dish-description">
+            {{item.description || '暂无菜品描述'}}
+          </view>
+
+          <view class="dish-bottom">
+            <view class="dish-price">
+              <text class="currency">¥</text>
+              {{item.priceText}}
+            </view>
+
+            <view class="detail-button">
+              查看
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+  </view>
+
+</view>
