@@ -137,3 +137,26 @@
   line-height: 36rpx;
   text-align: center;
 }
+
+.add-cart-button {
+
+  margin-top: 50rpx;
+
+  width: 100%;
+
+  border-radius: 50rpx;
+
+  background-color: #ff7a45;
+
+  color:white;
+
+  font-size:32rpx;
+}
+
+.go-cart-button {
+  margin-top: 24rpx;
+  border-radius: 50rpx;
+  background-color: #ffffff;
+  color: #ff7a45;
+  border: 1rpx solid #ff7a45;
+}

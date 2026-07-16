@@ -14,7 +14,8 @@ function request(options) {
       data,
 
       header: {
-        "content-type": "application/json"
+        "content-type": "application/json",
+        "X-User-Id": 1
       },
 
       success: (res) => {

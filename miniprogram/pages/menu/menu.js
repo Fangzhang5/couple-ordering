@@ -8,6 +8,10 @@ const {
 const {
   formatPrice
 } = require("../../utils/format")
+const {
+  addCartItem,
+  getCart
+} = require("../../api/cart")
 
 Page({
 
@@ -20,7 +24,10 @@ Page({
     currentDishes: [],
 
     categoryLoading: true,
-    dishLoading: false
+    dishLoading: false,
+
+    cartTotalQuantity: 0,
+    cartTotalAmountText: "0.00"
   },
 
   onCategoryTap(event) {
@@ -39,6 +46,26 @@ Page({
     wx.navigateTo({
       url: `/pages/dish-detail/dish-detail?id=${dishId}`
     })
+  },
+
+  onAddCartTap(event) {
+    const dishId = Number(event.currentTarget.dataset.id)
+  
+    addCartItem({
+      dishId,
+      quantity: 1
+    })
+      .then((cart) => {
+        this.updateCartSummary(cart)
+  
+        wx.showToast({
+          title: "已加入购物车",
+          icon: "success"
+        })
+      })
+      .catch((err) => {
+        console.error("加入购物车失败：", err)
+      })
   },
 
   loadCategories() {
@@ -101,6 +128,40 @@ Page({
       })
   },
 
+  loadCartSummary() {
+    getCart()
+      .then((cart) => {
+        this.updateCartSummary(cart)
+      })
+      .catch((err) => {
+        console.error("购物车汇总加载失败：", err)
+      })
+  },
+
+  updateCartSummary(cart) {
+    this.setData({
+      cartTotalQuantity: cart.totalQuantity,
+      cartTotalAmountText: formatPrice(cart.totalAmount)
+    })
+  },
+  
+  onGoCart() {
+    wx.navigateTo({
+      url: "/pages/cart/cart"
+    })
+  },
+  
+  onCheckoutTap() {
+    if (this.data.cartTotalQuantity === 0) {
+      return
+    }
+  
+    wx.showToast({
+      title: "确认订单页下一阶段开发",
+      icon: "none"
+    })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
@@ -119,7 +180,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.loadCartSummary()
   },
 
   /**

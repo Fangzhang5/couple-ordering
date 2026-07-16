@@ -64,8 +64,8 @@
               {{item.priceText}}
             </view>
 
-            <view class="detail-button">
-              查看
+            <view class="add-button" data-id="{{item.id}}" catchtap="onAddCartTap">
+              +
             </view>
           </view>
         </view>
@@ -74,4 +74,49 @@
 
   </view>
 
+</view>
+<!-- 底部购物车栏 -->
+<view
+  wx:if="{{!categoryLoading}}"
+  class="cart-bar"
+  bindtap="onGoCart"
+>
+  <!-- 购物车图标及数量角标 -->
+  <view class="cart-icon-wrapper">
+    <text class="cart-icon">🛒</text>
+
+    <view
+      wx:if="{{cartTotalQuantity > 0}}"
+      class="cart-badge"
+    >
+      {{cartTotalQuantity}}
+    </view>
+  </view>
+
+  <!-- 金额信息 -->
+  <view class="cart-info">
+    <text class="cart-amount">
+      ¥{{cartTotalAmountText}}
+    </text>
+
+    <text
+      wx:if="{{cartTotalQuantity > 0}}"
+      class="cart-tip"
+    >
+      共 {{cartTotalQuantity}} 份
+    </text>
+
+    <text wx:else class="cart-tip">
+      购物车为空
+    </text>
+  </view>
+
+  <!-- catchtap 防止同时触发购物车栏点击事件 -->
+  <button
+    class="checkout-button {{cartTotalQuantity === 0 ? 'checkout-button-disabled' : ''}}"
+    disabled="{{cartTotalQuantity === 0}}"
+    catchtap="onCheckoutTap"
+  >
+    去结算
+  </button>
 </view>

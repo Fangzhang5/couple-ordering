@@ -116,14 +116,21 @@
   font-size: 22rpx;
 }
 
-.detail-button {
-  padding: 10rpx 22rpx;
+.add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  border-radius: 28rpx;
-  background-color: #ff7a45;
+  width: 52rpx;
+  height: 52rpx;
 
-  color: #ffffff;
-  font-size: 24rpx;
+  border-radius: 50%;
+  background-color: #ffc300;
+
+  color: #222222;
+  font-size: 40rpx;
+  font-weight: bold;
+  line-height: 52rpx;
 }
 
 .page-state {
@@ -167,4 +174,106 @@
   font-size: 24rpx;
   line-height: 36rpx;
   text-align: center;
+}
+
+.cart-bar {
+  position: fixed;
+  right: 24rpx;
+  bottom: calc(20rpx + env(safe-area-inset-bottom));
+  left: 24rpx;
+  z-index: 100;
+
+  display: flex;
+  align-items: center;
+
+  height: 106rpx;
+  padding: 0 14rpx 0 22rpx;
+  box-sizing: border-box;
+
+  border-radius: 56rpx;
+  background-color: #222222;
+  box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.22);
+}
+
+.cart-icon-wrapper {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 78rpx;
+  height: 78rpx;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background-color: #333333;
+}
+
+.cart-icon {
+  font-size: 45rpx;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+
+  min-width: 34rpx;
+  height: 34rpx;
+  padding: 0 8rpx;
+  box-sizing: border-box;
+
+  border-radius: 18rpx;
+  background-color: #ff5a36;
+
+  color: #ffffff;
+  font-size: 21rpx;
+  line-height: 34rpx;
+  text-align: center;
+}
+
+.cart-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+  margin-left: 22rpx;
+}
+
+.cart-amount {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.cart-tip {
+  margin-top: 4rpx;
+  color: #aaaaaa;
+  font-size: 22rpx;
+}
+
+.checkout-button {
+  width: 190rpx;
+  height: 76rpx;
+  margin: 0;
+  padding: 0;
+
+  border-radius: 40rpx;
+  background-color: #ff7a45;
+
+  color: #ffffff;
+  font-size: 29rpx;
+  font-weight: bold;
+  line-height: 76rpx;
+}
+
+.checkout-button::after {
+  border: none;
+}
+
+.checkout-button-disabled {
+  background-color: #555555;
+  color: #aaaaaa;
 }

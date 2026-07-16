@@ -3,7 +3,8 @@
     "pages/menu/menu",
     "pages/index/index",
     "pages/logs/logs",
-    "pages/dish-detail/dish-detail"
+    "pages/dish-detail/dish-detail",
+    "pages/cart/cart"
   ],
   "window": {
     "navigationBarTextStyle": "black",
