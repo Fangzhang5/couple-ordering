@@ -10,7 +10,9 @@ const {
 } = require("../../utils/format")
 const {
   addCartItem,
-  getCart
+  getCart,
+  updateCartItemQuantity,
+  deleteCartItem
 } = require("../../api/cart")
 
 Page({
@@ -26,8 +28,11 @@ Page({
     categoryLoading: true,
     dishLoading: false,
 
+    cartItems: [],
     cartTotalQuantity: 0,
-    cartTotalAmountText: "0.00"
+    cartTotalAmountText: "0.00",
+
+    updatingDishId: null
   },
 
   onCategoryTap(event) {
@@ -49,7 +54,15 @@ Page({
   },
 
   onAddCartTap(event) {
+    if (this.data.updatingDishId !== null) {
+      return
+    }
+  
     const dishId = Number(event.currentTarget.dataset.id)
+  
+    this.setData({
+      updatingDishId: dishId
+    })
   
     addCartItem({
       dishId,
@@ -58,13 +71,65 @@ Page({
       .then((cart) => {
         this.updateCartSummary(cart)
   
-        wx.showToast({
-          title: "已加入购物车",
-          icon: "success"
+        this.setData({
+          updatingDishId: null
         })
       })
       .catch((err) => {
         console.error("加入购物车失败：", err)
+  
+        this.setData({
+          updatingDishId: null
+        })
+  
+        wx.showToast({
+          title: err.message || "加入购物车失败",
+          icon: "none"
+        })
+      })
+  },
+
+  onDecreaseCartTap(event) {
+    if (this.data.updatingDishId !== null) {
+      return
+    }
+  
+    const dishId = Number(event.currentTarget.dataset.dishId)
+    const cartItemId = Number(event.currentTarget.dataset.cartItemId)
+    const currentQuantity = Number(event.currentTarget.dataset.quantity)
+  
+    if (!cartItemId || currentQuantity <= 0) {
+      return
+    }
+  
+    this.setData({
+      updatingDishId: dishId
+    })
+  
+    const requestTask =
+      currentQuantity === 1
+        ? deleteCartItem(cartItemId)
+        : updateCartItemQuantity(cartItemId, currentQuantity - 1)
+  
+    requestTask
+      .then((cart) => {
+        this.updateCartSummary(cart)
+  
+        this.setData({
+          updatingDishId: null
+        })
+      })
+      .catch((err) => {
+        console.error("减少购物车菜品失败：", err)
+  
+        this.setData({
+          updatingDishId: null
+        })
+  
+        wx.showToast({
+          title: err.message || "操作失败",
+          icon: "none"
+        })
       })
   },
 
@@ -113,8 +178,13 @@ Page({
           }
         })
 
+        const dishesWithCartInfo = this.mergeCartInfoToDishes(
+          formattedDishes,
+          this.data.cartItems
+        )
+
         this.setData({
-          currentDishes: formattedDishes,
+          currentDishes: dishesWithCartInfo,
           dishLoading: false
         })
       })
@@ -138,24 +208,51 @@ Page({
       })
   },
 
+  mergeCartInfoToDishes(dishes, cartItems) {
+    const cartItemMap = {}
+
+    cartItems.forEach((cartItem) => {
+      cartItemMap[cartItem.dishId] = cartItem
+    })
+
+    return dishes.map((dish) => {
+      const cartItem = cartItemMap[dish.id]
+
+      return {
+        ...dish,
+        cartItemId: cartItem ? cartItem.id : null,
+        cartQuantity: cartItem ? cartItem.quantity : 0
+      }
+    })
+  },
+
   updateCartSummary(cart) {
+    const cartItems = cart.items || []
+  
+    const currentDishes = this.mergeCartInfoToDishes(
+      this.data.currentDishes,
+      cartItems
+    )
+  
     this.setData({
+      cartItems,
+      currentDishes,
       cartTotalQuantity: cart.totalQuantity,
       cartTotalAmountText: formatPrice(cart.totalAmount)
     })
   },
-  
+
   onGoCart() {
     wx.navigateTo({
       url: "/pages/cart/cart"
     })
   },
-  
+
   onCheckoutTap() {
     if (this.data.cartTotalQuantity === 0) {
       return
     }
-  
+
     wx.showToast({
       title: "确认订单页下一阶段开发",
       icon: "none"

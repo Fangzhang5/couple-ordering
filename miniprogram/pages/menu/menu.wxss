@@ -133,6 +133,49 @@
   line-height: 52rpx;
 }
 
+.dish-cart-control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  height: 52rpx;
+  flex-shrink: 0;
+}
+
+.minus-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 48rpx;
+  height: 48rpx;
+  box-sizing: border-box;
+
+  border: 2rpx solid #dddddd;
+  border-radius: 50%;
+  background-color: #ffffff;
+
+  color: #333333;
+  font-size: 36rpx;
+  font-weight: bold;
+  line-height: 48rpx;
+}
+
+.cart-quantity {
+  min-width: 42rpx;
+  margin: 0 10rpx;
+
+  color: #333333;
+  font-size: 28rpx;
+  font-weight: bold;
+  text-align: center;
+  line-height: 52rpx;
+}
+
+.cart-button-disabled {
+  opacity: 0.45;
+}
+
 .page-state {
   display: flex;
   align-items: center;

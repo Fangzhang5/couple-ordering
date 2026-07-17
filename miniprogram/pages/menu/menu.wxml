@@ -64,8 +64,20 @@
               {{item.priceText}}
             </view>
 
-            <view class="add-button" data-id="{{item.id}}" catchtap="onAddCartTap">
-              +
+            <view class="dish-cart-control">
+              <!-- 已加入购物车时显示减号和数量 -->
+              <view wx:if="{{item.cartQuantity > 0}}" class="minus-button {{updatingDishId === item.id ? 'cart-button-disabled' : ''}}" data-dish-id="{{item.id}}" data-cart-item-id="{{item.cartItemId}}" data-quantity="{{item.cartQuantity}}" catchtap="onDecreaseCartTap">
+                −
+              </view>
+
+              <view wx:if="{{item.cartQuantity > 0}}" class="cart-quantity">
+                {{item.cartQuantity}}
+              </view>
+
+              <!-- 加号一直显示 -->
+              <view class="add-button {{updatingDishId === item.id ? 'cart-button-disabled' : ''}}" data-id="{{item.id}}" catchtap="onAddCartTap">
+                +
+              </view>
             </view>
           </view>
         </view>
@@ -76,19 +88,12 @@
 
 </view>
 <!-- 底部购物车栏 -->
-<view
-  wx:if="{{!categoryLoading}}"
-  class="cart-bar"
-  bindtap="onGoCart"
->
+<view wx:if="{{!categoryLoading}}" class="cart-bar" bindtap="onGoCart">
   <!-- 购物车图标及数量角标 -->
   <view class="cart-icon-wrapper">
     <text class="cart-icon">🛒</text>
 
-    <view
-      wx:if="{{cartTotalQuantity > 0}}"
-      class="cart-badge"
-    >
+    <view wx:if="{{cartTotalQuantity > 0}}" class="cart-badge">
       {{cartTotalQuantity}}
     </view>
   </view>
@@ -99,10 +104,7 @@
       ¥{{cartTotalAmountText}}
     </text>
 
-    <text
-      wx:if="{{cartTotalQuantity > 0}}"
-      class="cart-tip"
-    >
+    <text wx:if="{{cartTotalQuantity > 0}}" class="cart-tip">
       共 {{cartTotalQuantity}} 份
     </text>
 
@@ -112,11 +114,7 @@
   </view>
 
   <!-- catchtap 防止同时触发购物车栏点击事件 -->
-  <button
-    class="checkout-button {{cartTotalQuantity === 0 ? 'checkout-button-disabled' : ''}}"
-    disabled="{{cartTotalQuantity === 0}}"
-    catchtap="onCheckoutTap"
-  >
+  <button class="checkout-button {{cartTotalQuantity === 0 ? 'checkout-button-disabled' : ''}}" disabled="{{cartTotalQuantity === 0}}" catchtap="onCheckoutTap">
     去结算
   </button>
 </view>

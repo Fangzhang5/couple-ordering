@@ -48,9 +48,17 @@ function deleteCartItem(cartItemId) {
   })
 }
 
+function clearCart() {
+  return request({
+    url: "/cart/items",
+    method: "DELETE"
+  })
+}
+
 module.exports = {
   addCartItem,
   getCart,
   updateCartItemQuantity,
-  deleteCartItem
+  deleteCartItem,
+  clearCart
 }

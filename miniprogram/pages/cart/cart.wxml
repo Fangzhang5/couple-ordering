@@ -27,6 +27,15 @@
 <!-- 正常购物车 -->
 <view wx:else class="cart-page">
 
+  <!-- 购物车顶部操作栏 -->
+  <view class="cart-header">
+    <text class="cart-title">购物车</text>
+
+    <view class="clear-cart {{clearingCart ? 'clear-cart-disabled' : ''}}" bindtap="onClearCartTap">
+      {{clearingCart ? "清空中..." : "清空购物车"}}
+    </view>
+  </view>
+
   <view class="cart-list">
     <view wx:for="{{items}}" wx:key="id" class="cart-item">
       <image wx:if="{{item.dishImageUrl}}" class="dish-image" src="{{item.dishImageUrl}}" mode="aspectFill"></image>

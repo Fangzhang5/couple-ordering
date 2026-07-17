@@ -2,7 +2,8 @@
 const {
   getCart,
   updateCartItemQuantity,
-  deleteCartItem
+  deleteCartItem,
+  clearCart
 } = require("../../api/cart")
 const {
   formatPrice
@@ -21,7 +22,9 @@ Page({
     loading: true,
     errorMessage: "",
 
-    updatingCartItemId: null
+    updatingCartItemId: null,
+
+    clearingCart: false
   },
 
   loadCart() {
@@ -151,6 +154,59 @@ Page({
       })
   },
 
+  onClearCartTap() {
+    if (
+      this.data.clearingCart ||
+      this.data.updatingCartItemId !== null
+    ) {
+      return
+    }
+  
+    wx.showModal({
+      title: "清空购物车",
+      content: "确定要清空购物车中的全部菜品吗？",
+      confirmText: "清空",
+      confirmColor: "#e64340",
+  
+      success: (res) => {
+        if (!res.confirm) {
+          return
+        }
+  
+        this.setData({
+          clearingCart: true
+        })
+  
+        clearCart()
+          .then(() => {
+            this.setData({
+              items: [],
+              totalQuantity: 0,
+              totalAmountText: "0.00",
+              clearingCart: false
+            })
+  
+            wx.showToast({
+              title: "购物车已清空",
+              icon: "success"
+            })
+          })
+          .catch((err) => {
+            console.error("清空购物车失败：", err)
+  
+            this.setData({
+              clearingCart: false
+            })
+  
+            wx.showToast({
+              title: err.message || "清空购物车失败",
+              icon: "none"
+            })
+          })
+      }
+    })
+  },
+  
   /**
    * 生命周期函数--监听页面加载
    */
