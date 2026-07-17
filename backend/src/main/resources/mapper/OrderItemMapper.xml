@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.guowei.ordering.mapper.OrderItemMapper">
+
+    <insert id="batchInsert">
+        INSERT INTO order_item (
+            order_id,
+            dish_id,
+            dish_name,
+            dish_image_url,
+            dish_price,
+            quantity,
+            amount
+        )
+        VALUES
+        <foreach collection="items" item="item" separator=",">
+            (
+                #{item.orderId},
+                #{item.dishId},
+                #{item.dishName},
+                #{item.dishImageUrl},
+                #{item.dishPrice},
+                #{item.quantity},
+                #{item.amount}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectByOrderId"
+            resultType="com.guowei.ordering.vo.OrderItemVO">
+        SELECT
+            id,
+            order_id,
+            dish_id,
+            dish_name,
+            dish_image_url,
+            dish_price,
+            quantity,
+            amount
+        FROM order_item
+        WHERE order_id = #{orderId}
+        ORDER BY id ASC
+    </select>
+
+</mapper>

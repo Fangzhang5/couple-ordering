@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.guowei.ordering.mapper.OrderMapper">
+
+    <insert id="insert"
+            parameterType="com.guowei.ordering.entity.Order"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO orders (
+            order_number,
+            user_id,
+            status,
+            amount,
+            remark,
+            expected_time
+        )
+        VALUES (
+            #{orderNumber},
+            #{userId},
+            #{status},
+            #{amount},
+            #{remark},
+            #{expectedTime}
+        )
+    </insert>
+
+    <select id="selectByIdAndUserId"
+            resultType="com.guowei.ordering.entity.Order">
+        SELECT
+            id,
+            order_number,
+            user_id,
+            status,
+            amount,
+            remark,
+            expected_time,
+            cancel_reason,
+            create_time,
+            update_time
+        FROM orders
+        WHERE id = #{id}
+            AND user_id = #{userId}
+        LIMIT 1
+    </select>
+
+    <select id="selectDetailByIdAndUserId"
+            resultType="com.guowei.ordering.vo.OrderDetailVO">
+        SELECT
+            o.id,
+            o.order_number,
+            o.user_id,
+            o.status,
+            o.amount,
+            COALESCE(SUM(oi.quantity), 0) AS total_quantity,
+            o.remark,
+            o.expected_time,
+            o.cancel_reason,
+            o.create_time,
+            o.update_time
+        FROM orders o
+        LEFT JOIN order_item oi
+            ON oi.order_id = o.id
+        WHERE o.id = #{id}
+            AND o.user_id = #{userId}
+        GROUP BY
+            o.id,
+            o.order_number,
+            o.user_id,
+            o.status,
+            o.amount,
+            o.remark,
+            o.expected_time,
+            o.cancel_reason,
+            o.create_time,
+            o.update_time
+        LIMIT 1
+    </select>
+
+    <select id="countByUserId"
+            resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM orders
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectPageByUserId"
+            resultType="com.guowei.ordering.vo.OrderListItemVO">
+        SELECT
+            o.id,
+            o.order_number,
+            o.status,
+            o.amount,
+            COALESCE(SUM(oi.quantity), 0) AS total_quantity,
+            o.remark,
+            o.expected_time,
+            o.create_time
+        FROM orders o
+        LEFT JOIN order_item oi
+            ON oi.order_id = o.id
+        WHERE o.user_id = #{userId}
+        GROUP BY
+            o.id,
+            o.order_number,
+            o.status,
+            o.amount,
+            o.remark,
+            o.expected_time,
+            o.create_time
+        ORDER BY o.create_time DESC, o.id DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <update id="cancelByIdAndUserId">
+        UPDATE orders
+        SET status = 5,
+            cancel_reason = #{cancelReason},
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+            AND user_id = #{userId}
+            AND status NOT IN (4, 5)
+    </update>
+
+    <update id="completeByIdAndUserId">
+        UPDATE orders
+        SET status = 4,
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+            AND user_id = #{userId}
+            AND status != 5
+    </update>
+
+</mapper>
