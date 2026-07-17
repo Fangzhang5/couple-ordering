@@ -1,0 +1,100 @@
+<!--pages/cart.wxml-->
+<!-- 加载状态 -->
+<view wx:if="{{loading}}" class="page-state">
+  <text>购物车加载中...</text>
+</view>
+
+<!-- 请求失败 -->
+<view wx:elif="{{errorMessage}}" class="page-state">
+  <text class="state-icon">😵</text>
+  <text class="state-title">购物车加载失败</text>
+  <text class="state-description">{{errorMessage}}</text>
+
+  <button class="retry-button" size="mini" bindtap="loadCart">
+    重新加载
+  </button>
+</view>
+
+<!-- 空购物车 -->
+<view wx:elif="{{items.length === 0}}" class="page-state">
+  <text class="state-icon">🛒</text>
+  <text class="state-title">购物车还是空的</text>
+  <text class="state-description">
+    去选择一些喜欢的菜品吧
+  </text>
+</view>
+
+<!-- 正常购物车 -->
+<view wx:else class="cart-page">
+
+  <!-- 购物车顶部操作栏 -->
+  <view class="cart-header">
+    <text class="cart-title">购物车</text>
+
+    <view class="clear-cart {{clearingCart ? 'clear-cart-disabled' : ''}}" bindtap="onClearCartTap">
+      {{clearingCart ? "清空中..." : "清空购物车"}}
+    </view>
+  </view>
+
+  <view class="cart-list">
+    <view wx:for="{{items}}" wx:key="id" class="cart-item">
+      <image wx:if="{{item.dishImageUrl}}" class="dish-image" src="{{item.dishImageUrl}}" mode="aspectFill"></image>
+
+      <view wx:else class="dish-image dish-placeholder">
+        <text>🍳</text>
+      </view>
+
+      <view class="dish-content">
+        <text class="dish-name">{{item.dishName}}</text>
+
+        <!-- 单价与数量控制 -->
+        <view class="price-control-row">
+          <text class="dish-price">
+            ¥{{item.dishPriceText}}
+          </text>
+
+          <view class="quantity-control">
+            <view class="quantity-button {{updatingCartItemId === item.id ? 'quantity-button-disabled' : ''}}" data-id="{{item.id}}" data-quantity="{{item.quantity}}" catchtap="onDecreaseTap">
+              −
+            </view>
+
+            <view class="quantity-number">
+              {{item.quantity}}
+            </view>
+
+            <view class="quantity-button {{item.quantity >= 99 || updatingCartItemId === item.id ? 'quantity-button-disabled' : ''}}" data-id="{{item.id}}" data-quantity="{{item.quantity}}" catchtap="onIncreaseTap">
+              +
+            </view>
+          </view>
+        </view>
+
+        <!-- 小计单独一行靠右 -->
+        <view class="amount-row">
+          <text class="item-amount">
+            小计 ¥{{item.amountText}}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部汇总 -->
+  <view class="cart-footer">
+    <view class="summary">
+      <text class="summary-count">
+        共 {{totalQuantity}} 份
+      </text>
+
+      <view class="total-price">
+        <text class="total-label">合计：</text>
+        <text class="currency">¥</text>
+        <text class="total-number">{{totalAmountText}}</text>
+      </view>
+    </view>
+
+    <button class="checkout-button">
+      去结算
+    </button>
+  </view>
+
+</view>

@@ -20,7 +20,7 @@
         INNER JOIN dish d
             ON d.id = sc.dish_id
         WHERE sc.user_id = #{userId}
-        ORDER BY sc.update_time DESC, sc.id DESC
+        ORDER BY sc.create_time ASC, sc.id ASC
     </select>
 
 

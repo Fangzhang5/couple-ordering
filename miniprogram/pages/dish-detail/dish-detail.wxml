@@ -14,12 +14,7 @@
 <!-- 正常详情 -->
 <view wx:elif="{{dish}}" class="detail-page">
 
-  <image
-    wx:if="{{dish.imageUrl}}"
-    class="dish-image"
-    src="{{dish.imageUrl}}"
-    mode="aspectFill"
-  ></image>
+  <image wx:if="{{dish.imageUrl}}" class="dish-image" src="{{dish.imageUrl}}" mode="aspectFill"></image>
 
   <view wx:else class="dish-image dish-placeholder">
     <text>🍳</text>
