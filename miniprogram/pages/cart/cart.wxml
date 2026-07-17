@@ -10,11 +10,7 @@
   <text class="state-title">购物车加载失败</text>
   <text class="state-description">{{errorMessage}}</text>
 
-  <button
-    class="retry-button"
-    size="mini"
-    bindtap="loadCart"
-  >
+  <button class="retry-button" size="mini" bindtap="loadCart">
     重新加载
   </button>
 </view>
@@ -32,17 +28,8 @@
 <view wx:else class="cart-page">
 
   <view class="cart-list">
-    <view
-      wx:for="{{items}}"
-      wx:key="id"
-      class="cart-item"
-    >
-      <image
-        wx:if="{{item.dishImageUrl}}"
-        class="dish-image"
-        src="{{item.dishImageUrl}}"
-        mode="aspectFill"
-      ></image>
+    <view wx:for="{{items}}" wx:key="id" class="cart-item">
+      <image wx:if="{{item.dishImageUrl}}" class="dish-image" src="{{item.dishImageUrl}}" mode="aspectFill"></image>
 
       <view wx:else class="dish-image dish-placeholder">
         <text>🍳</text>
@@ -51,15 +38,29 @@
       <view class="dish-content">
         <text class="dish-name">{{item.dishName}}</text>
 
-        <text class="dish-price">
-          ¥{{item.dishPriceText}}
-        </text>
-
-        <view class="item-bottom">
-          <text class="dish-quantity">
-            数量：{{item.quantity}}
+        <!-- 单价与数量控制 -->
+        <view class="price-control-row">
+          <text class="dish-price">
+            ¥{{item.dishPriceText}}
           </text>
 
+          <view class="quantity-control">
+            <view class="quantity-button {{updatingCartItemId === item.id ? 'quantity-button-disabled' : ''}}" data-id="{{item.id}}" data-quantity="{{item.quantity}}" catchtap="onDecreaseTap">
+              −
+            </view>
+
+            <view class="quantity-number">
+              {{item.quantity}}
+            </view>
+
+            <view class="quantity-button {{item.quantity >= 99 || updatingCartItemId === item.id ? 'quantity-button-disabled' : ''}}" data-id="{{item.id}}" data-quantity="{{item.quantity}}" catchtap="onIncreaseTap">
+              +
+            </view>
+          </view>
+        </view>
+
+        <!-- 小计单独一行靠右 -->
+        <view class="amount-row">
           <text class="item-amount">
             小计 ¥{{item.amountText}}
           </text>

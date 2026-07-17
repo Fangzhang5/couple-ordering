@@ -28,7 +28,29 @@ function getCart() {
 }
 
 
+/**
+ * 修改购物车项数量
+ */
+function updateCartItemQuantity(cartItemId, quantity) {
+  return request({
+    url: `/cart/items/${cartItemId}`,
+    method: "PATCH",
+    data: {
+      quantity
+    }
+  })
+}
+
+function deleteCartItem(cartItemId) {
+  return request({
+    url: `/cart/items/${cartItemId}`,
+    method: "DELETE"
+  })
+}
+
 module.exports = {
   addCartItem,
-  getCart
+  getCart,
+  updateCartItemQuantity,
+  deleteCartItem
 }

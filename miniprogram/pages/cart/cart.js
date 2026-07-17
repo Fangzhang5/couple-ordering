@@ -1,6 +1,8 @@
 // pages/cart.js
 const {
-  getCart
+  getCart,
+  updateCartItemQuantity,
+  deleteCartItem
 } = require("../../api/cart")
 const {
   formatPrice
@@ -17,7 +19,9 @@ Page({
     totalAmountText: "0.00",
 
     loading: true,
-    errorMessage: ""
+    errorMessage: "",
+
+    updatingCartItemId: null
   },
 
   loadCart() {
@@ -28,18 +32,9 @@ Page({
 
     getCart()
       .then((cart) => {
-        const items = cart.items.map((item) => {
-          return {
-            ...item,
-            dishPriceText: formatPrice(item.dishPrice),
-            amountText: formatPrice(item.amount)
-          }
-        })
+        this.updateCartView(cart)
 
         this.setData({
-          items,
-          totalQuantity: cart.totalQuantity,
-          totalAmountText: formatPrice(cart.totalAmount),
           loading: false
         })
       })
@@ -52,6 +47,106 @@ Page({
           totalAmountText: "0.00",
           loading: false,
           errorMessage: err.message || "购物车加载失败"
+        })
+      })
+  },
+
+  updateCartView(cart) {
+    const items = cart.items.map((item) => {
+      return {
+        ...item,
+        dishPriceText: formatPrice(item.dishPrice),
+        amountText: formatPrice(item.amount)
+      }
+    })
+
+    this.setData({
+      items,
+      totalQuantity: cart.totalQuantity,
+      totalAmountText: formatPrice(cart.totalAmount)
+    })
+  },
+
+  onIncreaseTap(event) {
+    if (this.data.updatingCartItemId !== null) {
+      return
+    }
+  
+    const cartItemId = Number(event.currentTarget.dataset.id)
+    const currentQuantity = Number(event.currentTarget.dataset.quantity)
+  
+    if (currentQuantity >= 99) {
+      wx.showToast({
+        title: "数量不能超过99",
+        icon: "none"
+      })
+  
+      return
+    }
+  
+    this.updateQuantity(cartItemId, currentQuantity + 1)
+  },
+
+  onDecreaseTap(event) {
+    if (this.data.updatingCartItemId !== null) {
+      return
+    }
+  
+    const cartItemId = Number(event.currentTarget.dataset.id)
+    const currentQuantity = Number(event.currentTarget.dataset.quantity)
+  
+    if (currentQuantity === 1) {
+      this.removeCartItem(cartItemId)
+      return
+    }
+  
+    this.updateQuantity(cartItemId, currentQuantity - 1)
+  },
+
+  updateQuantity(cartItemId, quantity) {
+    if (this.data.updatingCartItemId !== null) {
+      return
+    }
+
+    this.setData({
+      updatingCartItemId: cartItemId
+    })
+
+    updateCartItemQuantity(cartItemId, quantity)
+      .then((cart) => {
+        this.updateCartView(cart)
+
+        this.setData({
+          updatingCartItemId: null
+        })
+      })
+      .catch((err) => {
+        console.error("修改购物车数量失败：", err)
+
+        this.setData({
+          updatingCartItemId: null
+        })
+      })
+  },
+
+  removeCartItem(cartItemId) {
+    this.setData({
+      updatingCartItemId: cartItemId
+    })
+  
+    deleteCartItem(cartItemId)
+      .then((cart) => {
+        this.updateCartView(cart)
+  
+        this.setData({
+          updatingCartItemId: null
+        })
+      })
+      .catch((err) => {
+        console.error("删除购物车菜品失败：", err)
+  
+        this.setData({
+          updatingCartItemId: null
         })
       })
   },
